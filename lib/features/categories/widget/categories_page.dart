@@ -138,7 +138,7 @@ class _CategorySheetState extends ConsumerState<_CategorySheet> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _nameCtrl,
-            decoration: InputDecoration(labelText: 'category_name'.tr()),
+            decoration: InputDecoration(hintText: 'category_name'.tr()),
           ),
           const SizedBox(height: 16),
           Text('Icon', style: const TextStyle(fontWeight: FontWeight.w500)),

@@ -112,12 +112,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             ),
             const SizedBox(height: 16),
 
-            // Amount
+            _FieldLabel('amount'.tr()),
             TextFormField(
               controller: _amountCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
-                labelText: 'amount'.tr(),
+                hintText: '0.00',
                 prefixIcon: const Icon(Icons.attach_money_rounded),
               ),
               validator: (v) {
@@ -128,32 +128,20 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             ),
             const SizedBox(height: 12),
 
-            // Note
+            _FieldLabel('note'.tr()),
             TextFormField(
               controller: _noteCtrl,
               decoration: InputDecoration(
-                labelText: 'note'.tr(),
+                hintText: 'note'.tr(),
                 prefixIcon: const Icon(Icons.notes_rounded),
               ),
             ),
             const SizedBox(height: 12),
 
-            // Date picker
-            ListTile(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              tileColor: Theme.of(context).inputDecorationTheme.fillColor,
-              leading: const Icon(Icons.calendar_today_rounded),
-              title: Text('date'.tr()),
-              trailing: Text(DateFormat('dd MMM yyyy').format(_date)),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _date,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _date = picked);
-              },
+            _FieldLabel('date'.tr()),
+            _DateField(
+              date: _date,
+              onChanged: (d) => setState(() => _date = d),
             ),
             const SizedBox(height: 16),
 
@@ -233,6 +221,59 @@ class _CategoryGrid extends ConsumerWidget {
       ),
       loading: () => const CircularProgressIndicator(),
       error: (e, _) => Text(e.toString()),
+    );
+  }
+}
+
+class _FieldLabel extends StatelessWidget {
+  const _FieldLabel(this.label);
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      label,
+      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant),
+    ),
+  );
+}
+
+class _DateField extends StatelessWidget {
+  const _DateField({required this.date, required this.onChanged});
+  final DateTime date;
+  final ValueChanged<DateTime> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fmt = DateFormat('EEEE, dd MMMM yyyy');
+    return Material(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: date,
+            firstDate: DateTime(2000),
+            lastDate: DateTime.now(),
+          );
+          if (picked != null) onChanged(picked);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Row(
+            children: [
+              Icon(Icons.calendar_month_rounded, color: cs.primary, size: 20),
+              const SizedBox(width: 12),
+              Expanded(child: Text(fmt.format(date), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14))),
+              Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant, size: 20),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

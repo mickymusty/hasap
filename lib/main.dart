@@ -24,6 +24,12 @@ class HasapApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Read locale at the top so HasapApp subscribes to EasyLocalization
+    // InheritedWidget and rebuilds immediately when locale changes.
+    final locale = context.locale;
+    final delegates = context.localizationDelegates;
+    final locales = context.supportedLocales;
+
     final settings = ref.watch(settingsProvider);
 
     return settings.when(
@@ -32,9 +38,9 @@ class HasapApp extends ConsumerWidget {
         theme: lightTheme(),
         darkTheme: darkTheme(),
         themeMode: s.themeMode,
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
+        locale: locale,
+        localizationsDelegates: delegates,
+        supportedLocales: locales,
         routerConfig: appRouter,
         builder: (context, child) {
           if (s.pinEnabled && s.pin != null) {

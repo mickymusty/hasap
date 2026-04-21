@@ -10,17 +10,23 @@ ThemeData lightTheme() => ThemeData(
   appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 0),
   cardTheme: CardThemeData(
     elevation: 0,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    floatingLabelBehavior: FloatingLabelBehavior.never,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: _seedColor, width: 1.5),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
       minimumSize: const Size(double.infinity, 52),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     ),
   ),
 );
@@ -32,17 +38,23 @@ ThemeData darkTheme() => ThemeData(
   appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 0),
   cardTheme: CardThemeData(
     elevation: 0,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    floatingLabelBehavior: FloatingLabelBehavior.never,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: _seedColor, width: 1.5),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
       minimumSize: const Size(double.infinity, 52),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     ),
   ),
 );
