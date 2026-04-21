@@ -7,9 +7,9 @@ import 'package:hasap/features/transactions/data/transaction_repository.dart';
 
 final _txPeriodProvider = StateProvider<PeriodFilter>((ref) => PeriodFilter.month);
 
-final _transactionsProvider = StreamProvider.family<List<TransactionWithCategory>, PeriodFilter>((ref, period) {
-  return ref.watch(transactionRepositoryProvider).watchAll(period);
-});
+final _transactionsProvider = StreamProvider.family<List<TransactionWithCategory>, PeriodFilter>(
+  (ref, period) => ref.watch(transactionRepositoryProvider).watchAll(period),
+);
 
 class TransactionsPage extends ConsumerWidget {
   const TransactionsPage({super.key});
@@ -18,10 +18,13 @@ class TransactionsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final period = ref.watch(_txPeriodProvider);
     final txs = ref.watch(_transactionsProvider(period));
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: cs.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text('transactions'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: cs.surfaceContainerLowest,
+        title: Text('transactions'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/transactions/add'),
@@ -31,29 +34,45 @@ class TransactionsPage extends ConsumerWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: SegmentedButton<PeriodFilter>(
-              segments: [
-                ButtonSegment(value: PeriodFilter.today, label: Text('today'.tr())),
-                ButtonSegment(value: PeriodFilter.week, label: Text('this_week'.tr())),
-                ButtonSegment(value: PeriodFilter.month, label: Text('this_month'.tr())),
-                ButtonSegment(value: PeriodFilter.all, label: const Text('All')),
-              ],
-              selected: {period},
-              onSelectionChanged: (s) => ref.read(_txPeriodProvider.notifier).state = s.first,
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  (PeriodFilter.today, 'today'.tr()),
+                  (PeriodFilter.week, 'this_week'.tr()),
+                  (PeriodFilter.month, 'this_month'.tr()),
+                  (PeriodFilter.all, 'All'),
+                ].map((item) {
+                  final isSelected = period == item.$1;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(item.$2),
+                      selected: isSelected,
+                      onSelected: (_) => ref.read(_txPeriodProvider.notifier).state = item.$1,
+                      showCheckmark: false,
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ),
-          const SizedBox(height: 8),
           Expanded(
             child: txs.when(
               data: (list) => list.isEmpty
-                  ? Center(child: Text('no_transactions'.tr(), style: const TextStyle(color: Colors.grey)))
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.receipt_long_outlined, size: 64, color: cs.outlineVariant),
+                          const SizedBox(height: 12),
+                          Text('no_transactions'.tr(), style: TextStyle(color: cs.onSurfaceVariant, fontSize: 16)),
+                        ],
+                      ),
+                    )
                   : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                       itemCount: list.length,
                       itemBuilder: (ctx, i) => _TransactionTile(item: list[i]),
                     ),
@@ -76,51 +95,75 @@ class _TransactionTile extends ConsumerWidget {
     final tx = item.transaction;
     final cat = item.category;
     final isIncome = tx.type == TransactionType.income;
-    final color = isIncome ? const Color(0xFF00B894) : const Color(0xFFFF6B6B);
-    final fmt = DateFormat('dd MMM yyyy', context.locale.toString());
+    final amountColor = isIncome ? const Color(0xFF00B894) : const Color(0xFFE17055);
+    final cs = Theme.of(context).colorScheme;
+    final fmt = DateFormat('dd MMM', context.locale.toString());
 
     return Dismissible(
       key: ValueKey(tx.id),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 16),
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(color: Colors.red.shade400, borderRadius: BorderRadius.circular(20)),
+        child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 26),
       ),
-      confirmDismiss: (_) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('delete'.tr()),
-            content: Text('confirm_delete'.tr()),
-            actions: [
-              TextButton(onPressed: () => ctx.pop(false), child: Text('cancel'.tr())),
-              FilledButton(onPressed: () => ctx.pop(true), child: Text('delete'.tr())),
-            ],
-          ),
-        );
-      },
+      confirmDismiss: (_) => showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('delete'.tr()),
+          content: Text('confirm_delete'.tr()),
+          actions: [
+            TextButton(onPressed: () => ctx.pop(false), child: Text('cancel'.tr())),
+            FilledButton(onPressed: () => ctx.pop(true), child: Text('delete'.tr())),
+          ],
+        ),
+      ),
       onDismissed: (_) => ref.read(transactionRepositoryProvider).delete(tx.id),
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 8),
-        child: ListTile(
-          onTap: () => context.push('/transactions/add', extra: tx.id),
-          leading: CircleAvatar(
-            backgroundColor: Color(cat.color).withOpacity(0.2),
-            child: Text(cat.icon, style: const TextStyle(fontSize: 20)),
+      child: GestureDetector(
+        onTap: () => context.push('/transactions/add', extra: tx.id),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: cs.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.4)),
           ),
-          title: Text(
-            tx.note?.isNotEmpty == true ? tx.note! : cat.name.tr(),
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-          subtitle: Text(fmt.format(tx.date), style: const TextStyle(fontSize: 12)),
-          trailing: Text(
-            '${isIncome ? '+' : '-'}${tx.amount.toStringAsFixed(2)}',
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Color(cat.color).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(child: Text(cat.icon, style: const TextStyle(fontSize: 22))),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tx.note?.isNotEmpty == true ? tx.note! : cat.name.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(fmt.format(tx.date), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '${isIncome ? '+' : '-'}${tx.amount.toStringAsFixed(2)}',
+                style: TextStyle(color: amountColor, fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
           ),
         ),
       ),

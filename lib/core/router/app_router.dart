@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hasap/features/dashboard/widget/dashboard_page.dart';
@@ -13,27 +14,25 @@ final appRouter = GoRouter(
       builder: (context, state, shell) => ScaffoldWithNavBar(shell: shell),
       branches: [
         StatefulShellBranch(routes: [
-          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardPage()),
+          GoRoute(path: '/dashboard', builder: (_, _s) => const DashboardPage()),
         ]),
         StatefulShellBranch(routes: [
           GoRoute(
             path: '/transactions',
-            builder: (_, _) => const TransactionsPage(),
+            builder: (_, _s) => const TransactionsPage(),
             routes: [
               GoRoute(
                 path: 'add',
-                builder: (_, state) => AddTransactionPage(
-                  transactionId: state.extra as int?,
-                ),
+                builder: (_, state) => AddTransactionPage(transactionId: state.extra as int?),
               ),
             ],
           ),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/categories', builder: (_, _) => const CategoriesPage()),
+          GoRoute(path: '/categories', builder: (_, _s) => const CategoriesPage()),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/settings', builder: (_, _) => const SettingsPage()),
+          GoRoute(path: '/settings', builder: (_, _s) => const SettingsPage()),
         ]),
       ],
     ),
@@ -51,11 +50,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: shell.goBranch,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Dashboard'),
-          NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Transactions'),
-          NavigationDestination(icon: Icon(Icons.category_outlined), selectedIcon: Icon(Icons.category), label: 'Categories'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        destinations: [
+          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: 'dashboard'.tr()),
+          NavigationDestination(icon: const Icon(Icons.receipt_long_outlined), selectedIcon: const Icon(Icons.receipt_long), label: 'transactions'.tr()),
+          NavigationDestination(icon: const Icon(Icons.category_outlined), selectedIcon: const Icon(Icons.category), label: 'categories'.tr()),
+          NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings), label: 'settings'.tr()),
         ],
       ),
     );

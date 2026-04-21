@@ -22,3 +22,7 @@ class CategoryRepository {
 final categoryRepositoryProvider = Provider<CategoryRepository>(
   (ref) => CategoryRepository(ref.watch(dbProvider)),
 );
+
+final allCategoriesProvider = StreamProvider<List<Category>>(
+  (ref) => ref.watch(categoryRepositoryProvider).watchAll(),
+);

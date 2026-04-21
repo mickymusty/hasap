@@ -66,23 +66,12 @@ class _PinGateState extends State<_PinGate> {
   bool _unlocked = false;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showLock());
-  }
-
-  void _showLock() {
-    screenLock(
-      context: context,
+  Widget build(BuildContext context) {
+    if (_unlocked) return widget.child;
+    return ScreenLock(
       correctString: widget.pin,
       canCancel: false,
-      onUnlocked: () {
-        setState(() => _unlocked = true);
-        Navigator.pop(context);
-      },
+      onUnlocked: () => setState(() => _unlocked = true),
     );
   }
-
-  @override
-  Widget build(BuildContext context) => _unlocked ? widget.child : const SizedBox.shrink();
 }

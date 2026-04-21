@@ -191,9 +191,7 @@ class _CategoryGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cats = ref.watch(
-      StreamProvider((ref) => ref.watch(categoryRepositoryProvider).watchAll()),
-    );
+    final cats = ref.watch(allCategoriesProvider);
 
     return cats.when(
       data: (list) => Wrap(
