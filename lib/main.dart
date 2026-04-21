@@ -70,7 +70,6 @@ class _PinGateState extends State<_PinGate> {
     if (_unlocked) return widget.child;
     return ScreenLock(
       correctString: widget.pin,
-      canCancel: false,
       onUnlocked: () => setState(() => _unlocked = true),
     );
   }
