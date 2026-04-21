@@ -13,12 +13,12 @@ final appRouter = GoRouter(
       builder: (context, state, shell) => ScaffoldWithNavBar(shell: shell),
       branches: [
         StatefulShellBranch(routes: [
-          GoRoute(path: '/dashboard', builder: (_, __) => const DashboardPage()),
+          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardPage()),
         ]),
         StatefulShellBranch(routes: [
           GoRoute(
             path: '/transactions',
-            builder: (_, __) => const TransactionsPage(),
+            builder: (_, _) => const TransactionsPage(),
             routes: [
               GoRoute(
                 path: 'add',
@@ -30,10 +30,10 @@ final appRouter = GoRouter(
           ),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+          GoRoute(path: '/categories', builder: (_, _) => const CategoriesPage()),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/settings', builder: (_, __) => const SettingsPage()),
+          GoRoute(path: '/settings', builder: (_, _) => const SettingsPage()),
         ]),
       ],
     ),

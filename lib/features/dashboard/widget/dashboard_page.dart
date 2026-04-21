@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hasap/core/db/db.dart';
 import 'package:hasap/features/transactions/data/transaction_repository.dart';
 
 final _periodProvider = StateProvider<PeriodFilter>((ref) => PeriodFilter.month);

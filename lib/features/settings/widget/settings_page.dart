@@ -9,7 +9,8 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider);
+    final settings = ref.watch(settingsProvider).valueOrNull;
+    if (settings == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     return Scaffold(
       appBar: AppBar(
@@ -22,24 +23,9 @@ class SettingsPage extends ConsumerWidget {
           Card(
             child: Column(
               children: [
-                RadioListTile<ThemeMode>(
-                  title: Text('light_mode'.tr()),
-                  value: ThemeMode.light,
-                  groupValue: settings.themeMode,
-                  onChanged: (v) => ref.read(settingsProvider.notifier).setThemeMode(v!),
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text('dark_mode'.tr()),
-                  value: ThemeMode.dark,
-                  groupValue: settings.themeMode,
-                  onChanged: (v) => ref.read(settingsProvider.notifier).setThemeMode(v!),
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text('system'.tr()),
-                  value: ThemeMode.system,
-                  groupValue: settings.themeMode,
-                  onChanged: (v) => ref.read(settingsProvider.notifier).setThemeMode(v!),
-                ),
+                _ThemeTile(label: 'light_mode'.tr(), value: ThemeMode.light, current: settings.themeMode, ref: ref),
+                _ThemeTile(label: 'dark_mode'.tr(), value: ThemeMode.dark, current: settings.themeMode, ref: ref),
+                _ThemeTile(label: 'system'.tr(), value: ThemeMode.system, current: settings.themeMode, ref: ref),
               ],
             ),
           ),
@@ -48,9 +34,9 @@ class SettingsPage extends ConsumerWidget {
           Card(
             child: Column(
               children: [
-                _LangTile(locale: const Locale('en'), label: 'English', ref: ref),
-                _LangTile(locale: const Locale('tk'), label: 'Türkmen', ref: ref),
-                _LangTile(locale: const Locale('ru'), label: 'Русский', ref: ref),
+                _LangTile(locale: const Locale('en'), label: 'English'),
+                _LangTile(locale: const Locale('tk'), label: 'Türkmen'),
+                _LangTile(locale: const Locale('ru'), label: 'Русский'),
               ],
             ),
           ),
@@ -82,7 +68,7 @@ class SettingsPage extends ConsumerWidget {
       );
       if (newPin != null) await notifier.setPin(newPin!);
     } else {
-      final currentPin = ref.read(settingsProvider).pin;
+      final currentPin = ref.read(settingsProvider).valueOrNull?.pin;
       if (currentPin == null) return;
       bool confirmed = false;
       await screenLock(
@@ -109,17 +95,38 @@ class _SectionHeader extends StatelessWidget {
   );
 }
 
-class _LangTile extends StatelessWidget {
-  const _LangTile({required this.locale, required this.label, required this.ref});
-  final Locale locale;
+class _ThemeTile extends StatelessWidget {
+  const _ThemeTile({required this.label, required this.value, required this.current, required this.ref});
   final String label;
+  final ThemeMode value;
+  final ThemeMode current;
   final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) => RadioListTile<Locale>(
+  Widget build(BuildContext context) => ListTile(
     title: Text(label),
-    value: locale,
-    groupValue: context.locale,
-    onChanged: (v) => context.setLocale(v!),
+    leading: Radio<ThemeMode>(
+      value: value,
+      groupValue: current,
+      onChanged: (v) => ref.read(settingsProvider.notifier).setThemeMode(v!),
+    ),
+    onTap: () => ref.read(settingsProvider.notifier).setThemeMode(value),
+  );
+}
+
+class _LangTile extends StatelessWidget {
+  const _LangTile({required this.locale, required this.label});
+  final Locale locale;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    title: Text(label),
+    leading: Radio<Locale>(
+      value: locale,
+      groupValue: context.locale,
+      onChanged: (v) => context.setLocale(v!),
+    ),
+    onTap: () => context.setLocale(locale),
   );
 }

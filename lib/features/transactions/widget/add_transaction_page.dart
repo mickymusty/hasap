@@ -73,9 +73,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ref.watch(categoryRepositoryProvider.select(
-      (r) => r,
-    ));
     final isEdit = widget.transactionId != null;
 
     return Scaffold(

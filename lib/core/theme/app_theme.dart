@@ -8,7 +8,7 @@ ThemeData lightTheme() => ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: _seedColor),
   textTheme: GoogleFonts.poppinsTextTheme(),
   appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 0),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     elevation: 0,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   ),
@@ -30,7 +30,7 @@ ThemeData darkTheme() => ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: _seedColor, brightness: Brightness.dark),
   textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
   appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 0),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     elevation: 0,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
   ),
